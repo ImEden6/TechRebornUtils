@@ -1,6 +1,6 @@
-# TechReMix
+# TechReUtility
 
-A TechReborn addon that adds **chorus fruit** and **huge mushroom** compatibility to the greenhouse controller.
+A TechReborn addon that adds various useful additions and integrations that I find interesting, starting with **chorus fruit**, **huge mushroom**, and **BetterNether** compatibility for the greenhouse controller.
 
 ## Download
 
