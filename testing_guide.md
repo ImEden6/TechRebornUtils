@@ -2,7 +2,6 @@
 
 This checklist details the scenarios and verification steps to validate that all features in **TechReUtility** function correctly in-game.
 
----
 
 ## 1. Mod Setup & Registry
 - **Custom Creative Tab**:
@@ -14,8 +13,6 @@ This checklist details the scenarios and verification steps to validate that all
   - Hover over the items in the tab.
   - **Verify**: The name tags show `"Dark Growth Lamp"` and `"Ceiling Upgrade"` (no missing translation keys like `item.trutils...`).
 
----
-
 ## 2. Dark Growth Lamp Mechanics
 - **Energy Interaction**:
   - Connect a generator or power cable (up to Medium Voltage, max 32 EU/t input) to the lamp.
@@ -25,8 +22,6 @@ This checklist details the scenarios and verification steps to validate that all
   - Measure the light level on/around the active lamp.
   - **Verify**: Light level is exactly `3` when active, and `0` when powered off.
   - **Verify**: (If *LambDynamicLights* is installed) Held/dropped item glows purple dynamically.
-
----
 
 ## 3. Multiblock Validation & Ceiling Height
 - **Greenhouse Multiblock Verification**:
@@ -40,9 +35,10 @@ This checklist details the scenarios and verification steps to validate that all
     - Insert 2 upgrades $\rightarrow$ Verify scanning height is `5`.
     - Insert 3+ upgrades $\rightarrow$ Verify scanning height is capped at `6`.
 
----
-
 ## 4. Harvest Handlers (Farming)
+- **Energy Requirements**:
+  - **Verify**: The Greenhouse Controller consumes energy to perform growth boosts and to harvest crops.
+  - **Verify**: If the Greenhouse Controller has no power, it does not accelerate crop growth or harvest mature crops.
 - **Chorus Fruit Farming**:
   - Plant chorus seeds under the greenhouse on End Stone.
   - Let the chorus plant grow (flower reaches age 5).
