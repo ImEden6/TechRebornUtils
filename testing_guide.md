@@ -44,12 +44,10 @@ This checklist details the scenarios and verification steps to validate that all
 
 ## 4. Harvest Handlers (Farming)
 - **Chorus Fruit Farming**:
-  - Plant chorus seeds under the greenhouse.
-  - Let the chorus plant grow to maturity (flower reaches age 5).
-  - **Verify**: The controller harvests the mature flower, resets it to age 0 (allowing it to grow again), and transfers the harvested items into the controller's inventory.
-- **Huge Mushroom Farming**:
-  - Grow a huge red or brown mushroom within the greenhouse range.
-  - **Verify**: The greenhouse controller destroys the huge mushroom blocks, harvests them, and transfers drops to inventory.
+  - Plant chorus seeds under the greenhouse on End Stone.
+  - Let the chorus plant grow (flower reaches age 5).
+  - **Verify**: The controller only harvests the tree when **all** flowers on the tree are mature (age 5).
+  - **Verify**: When harvested, the entire chorus tree structure (stems and flowers) is recursively harvested down to the base and cleared (set to AIR), collecting all drops into the inventory.
 - **BetterNether: Magma Flower**:
   - Plant a magma flower on a magma block inside the greenhouse.
   - Let it grow to its maximum age stage (`3`).
@@ -59,3 +57,4 @@ This checklist details the scenarios and verification steps to validate that all
   - Let it grow downwards.
   - **Verify**: The greenhouse harvests the bottom-most segments of the vine (where `bottom` is true).
   - **Verify**: The top-most (root) block is **never** harvested, allowing the vine to grow back dynamically.
+  - **Verify**: The vine drops itself as an item when harvested (no Shears/Silk Touch required).
