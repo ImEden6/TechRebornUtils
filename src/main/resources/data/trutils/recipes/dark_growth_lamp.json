@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" X ",
+		"XIX",
+		" X "
+	],
+	"key": {
+		"X": { "item": "minecraft:amethyst_shard" },
+		"I": { "item": "techreborn:lamp_incandescent" }
+	},
+	"result": {
+		"id": "trutils:dark_growth_lamp",
+		"count": 1
+	}
+}

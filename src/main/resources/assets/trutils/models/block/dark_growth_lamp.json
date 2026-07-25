@@ -1,0 +1,6 @@
+{
+	"parent": "minecraft:block/cube_all",
+	"textures": {
+		"all": "trutils:block/dark_growth_lamp"
+	}
+}
