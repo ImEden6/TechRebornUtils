@@ -24,6 +24,11 @@ loom {
 			sourceSet sourceSets.client
 		}
 	}
+
+	mixin {
+		defaultRefmapName = "trutils.refmap.json"
+		useLegacyMixinAp = true
+	}
 }
 
 dependencies {

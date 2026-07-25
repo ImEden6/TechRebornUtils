@@ -30,18 +30,16 @@ import java.util.List;
 @Mixin(GreenhouseControllerBlockEntity.class)
 public abstract class GreenhouseControllerMixin {
 
-	@Shadow
-	private Level level;
-	@Shadow
+	@Shadow(remap = false)
 	private BlockPos multiblockCenter;
-	@Shadow
+	@Shadow(remap = false)
 	private int workingIndex;
-	@Shadow
+	@Shadow(remap = false)
 	private int range;
-	@Shadow
+	@Shadow(remap = false)
 	private boolean growthBoost;
 
-	@Shadow
+	@Shadow(remap = false)
 	private boolean insertIntoInv(List<ItemStack> stacks) {
 		throw new AbstractMethodError("Shadow");
 	}
@@ -72,7 +70,7 @@ public abstract class GreenhouseControllerMixin {
 		return LampBlock.isActive(s) || DarkGrowthLampBlock.isActive(s);
 	}
 
-	@Overwrite
+	@Overwrite(remap = false)
 	public void writeMultiblock(MultiblockWriter writer) {
 		BlockState lamp = TRContent.Machine.LAMP_INCANDESCENT.block.defaultBlockState()
 				.setValue(BlockStateProperties.FACING, Direction.DOWN);
@@ -94,13 +92,14 @@ public abstract class GreenhouseControllerMixin {
 		}
 	}
 
-	@Inject(method = "workCycle", at = @At("HEAD"))
+	@Inject(method = "workCycle", at = @At("HEAD"), remap = false)
 	private void onWorkCycleHead(CallbackInfo ci) {
 		capturedWorkingIndex = workingIndex;
 	}
 
-	@Inject(method = "workCycle", at = @At("TAIL"))
+	@Inject(method = "workCycle", at = @At("TAIL"), remap = false)
 	private void onWorkCycleTail(CallbackInfo ci) {
+		Level level = ((net.minecraft.world.level.block.entity.BlockEntity) (Object) this).getLevel();
 		if (level == null || level.isClientSide) {
 			return;
 		}
@@ -109,28 +108,41 @@ public abstract class GreenhouseControllerMixin {
 		int offsetX = capturedWorkingIndex % size;
 		int offsetZ = capturedWorkingIndex / size;
 		BlockPos corner = multiblockCenter.offset(-range, 0, -range);
-		BlockPos blockPos = corner.offset(offsetX, 0, offsetZ);
-		BlockState blockState = level.getBlockState(blockPos);
+		int count = getCeilingUpgradeCount();
+		int maxScanY = Math.min(3 + count, 6);
 
 		var self = (PowerAcceptorBlockEntity) (Object) this;
 
-		for (var handler : GreenhousePlantRegistry.getHandlers()) {
-			if (!handler.canHandle(blockState)) {
-				continue;
-			}
-			HarvestOffer offer = handler.getHarvestOffer((ServerLevel) level, blockPos, blockState);
-			if (offer != null && !offer.drops().isEmpty()) {
-				if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerHarvest
-						&& insertIntoInv(offer.drops())) {
-					self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerHarvest);
-					if (offer.newState() != null) {
-						level.setBlock(blockPos, offer.newState(), 2);
-					} else {
-						level.destroyBlock(blockPos, false, null, 3);
+		for (int y = maxScanY - 1; y >= 0; y--) {
+			BlockPos blockPos = corner.offset(offsetX, y, offsetZ);
+			BlockState blockState = level.getBlockState(blockPos);
+
+			for (var handler : GreenhousePlantRegistry.getHandlers()) {
+				if (!handler.canHandle(blockState)) {
+					continue;
+				}
+				if (growthBoost) {
+					if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerBonemeal) {
+						self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerBonemeal);
+						blockState.randomTick((ServerLevel) level, blockPos, level.random);
+						// Re-read block state in case randomTick changed it (e.g. grew the crop)
+						blockState = level.getBlockState(blockPos);
 					}
 				}
+				HarvestOffer offer = handler.getHarvestOffer((ServerLevel) level, blockPos, blockState);
+				if (offer != null && !offer.drops().isEmpty()) {
+					if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerHarvest
+							&& insertIntoInv(offer.drops())) {
+						self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerHarvest);
+						if (offer.newState() != null) {
+							level.setBlock(blockPos, offer.newState(), 2);
+						} else {
+							level.destroyBlock(blockPos, false, null, 3);
+						}
+					}
+				}
+				break;
 			}
-			break;
 		}
 	}
 }

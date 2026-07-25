@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class GoldenVineHandler implements GreenhousePlantHandler {
@@ -43,7 +44,7 @@ public class GoldenVineHandler implements GreenhousePlantHandler {
         if (aboveState.getBlock() != state.getBlock()) {
             return null; // Don't harvest the root block
         }
-        var drops = Block.getDrops(state, world, pos, null);
+        var drops = java.util.Collections.singletonList(new ItemStack(state.getBlock().asItem()));
         // Replace with AIR to harvest the bottom block
         var newState = Blocks.AIR.defaultBlockState();
         return new HarvestOffer(drops, newState);

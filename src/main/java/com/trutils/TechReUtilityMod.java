@@ -2,7 +2,6 @@ package com.trutils;
 
 import com.trutils.greenhouse.api.GreenhousePlantRegistry;
 import com.trutils.greenhouse.handler.ChorusFlowerHandler;
-import com.trutils.greenhouse.handler.HugeMushroomHandler;
 import com.trutils.greenhouse.handler.MagmaFlowerHandler;
 import com.trutils.greenhouse.handler.GoldenVineHandler;
 import com.trutils.init.ModBlocks;
@@ -22,7 +21,6 @@ public class TechReUtilityMod implements ModInitializer {
 		ModBlocks.initialize();
 		ModItems.initialize();
 		GreenhousePlantRegistry.register(new ChorusFlowerHandler());
-		GreenhousePlantRegistry.register(new HugeMushroomHandler());
 		GreenhousePlantRegistry.register(new MagmaFlowerHandler());
 		GreenhousePlantRegistry.register(new GoldenVineHandler());
 		LOGGER.info("TechReUtility initialized");
