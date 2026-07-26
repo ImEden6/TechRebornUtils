@@ -1,6 +1,5 @@
 package com.trutils.block;
 
-import com.trutils.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -35,6 +34,9 @@ public class DarkGrowthLampBlock extends Block implements EntityBlock {
 
 	private static final VoxelShape SHAPE = Block.box(2.0, 2.0, 2.0, 14.0, 14.0, 14.0);
 
+	public static BlockEntityType<DarkGrowthLampBlockEntity> ENTITY_TYPE;
+	public static DarkGrowthLampBlock INSTANCE;
+
 	public DarkGrowthLampBlock() {
 		super(Properties.of()
 				.requiresCorrectToolForDrops()
@@ -43,6 +45,7 @@ public class DarkGrowthLampBlock extends Block implements EntityBlock {
 				.sound(SoundType.GLASS));
 		registerDefaultState(stateDefinition.any().setValue(ACTIVE, false));
 		BlockWrenchEventHandler.wrenchableBlocks.add(this);
+		INSTANCE = this;
 	}
 
 	public static boolean isActive(BlockState state) {
@@ -97,7 +100,7 @@ public class DarkGrowthLampBlock extends Block implements EntityBlock {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-		if (type != ModBlocks.DARK_GROWTH_LAMP_ENTITY) return null;
+		if (type != ENTITY_TYPE) return null;
 		return (BlockEntityTicker<T>) (BlockEntityTicker<?>) (l, p, s, be) ->
 				((DarkGrowthLampBlockEntity) be).tick(l, p, s, (MachineBaseBlockEntity) be);
 	}

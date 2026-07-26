@@ -1,6 +1,5 @@
 package com.trutils.block;
 
-import com.trutils.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -16,22 +15,23 @@ import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 public class DarkGrowthLampBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop {
 
 	public DarkGrowthLampBlockEntity(BlockPos pos, BlockState state) {
-		super(ModBlocks.DARK_GROWTH_LAMP_ENTITY, pos, state);
+		super(DarkGrowthLampBlock.ENTITY_TYPE, pos, state);
 	}
 
 	@Override
+	@SuppressWarnings("unused")
 	public void tick(Level level, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity) {
 		super.tick(level, pos, state, blockEntity);
 		if (level == null || level.isClientSide) {
 			return;
 		}
-		Block b = state.getBlock();
-		if (!(b instanceof DarkGrowthLampBlock lamp)) {
+		DarkGrowthLampBlock lamp = getLampBlock();
+		if (lamp == null) {
 			return;
 		}
 
 		long cost = getEuPerTick(lamp.getCost());
-		if (getStored() > cost) {
+		if (getStored() >= cost) {
 			useEnergy(cost);
 			if (!DarkGrowthLampBlock.isActive(state)) {
 				DarkGrowthLampBlock.setActive(true, level, pos);
@@ -51,10 +51,16 @@ public class DarkGrowthLampBlockEntity extends PowerAcceptorBlockEntity implemen
 		return false;
 	}
 
+	private @Nullable DarkGrowthLampBlock getLampBlock() {
+		if (getLevel() == null) return null;
+		Block b = getLevel().getBlockState(getBlockPos()).getBlock();
+		return b instanceof DarkGrowthLampBlock lamp ? lamp : null;
+	}
+
 	@Override
 	public long getBaseMaxPower() {
-		Block b = getLevel() != null ? getLevel().getBlockState(getBlockPos()).getBlock() : null;
-		if (b instanceof DarkGrowthLampBlock lamp) {
+		DarkGrowthLampBlock lamp = getLampBlock();
+		if (lamp != null) {
 			return lamp.getCapacity();
 		}
 		return 33;
@@ -67,8 +73,8 @@ public class DarkGrowthLampBlockEntity extends PowerAcceptorBlockEntity implemen
 
 	@Override
 	public long getBaseMaxInput() {
-		Block b = getLevel() != null ? getLevel().getBlockState(getBlockPos()).getBlock() : null;
-		if (b instanceof DarkGrowthLampBlock lamp) {
+		DarkGrowthLampBlock lamp = getLampBlock();
+		if (lamp != null) {
 			return lamp.getMaxInput();
 		}
 		return 32;
@@ -76,9 +82,7 @@ public class DarkGrowthLampBlockEntity extends PowerAcceptorBlockEntity implemen
 
 	@Override
 	public ItemStack getToolDrop(Player player) {
-		if (getLevel() == null) {
-			return new ItemStack(ModBlocks.DARK_GROWTH_LAMP);
-		}
-		return new ItemStack(getLevel().getBlockState(getBlockPos()).getBlock());
+		BlockState state = getLevel() != null ? getLevel().getBlockState(getBlockPos()) : null;
+		return new ItemStack(state != null ? state.getBlock() : DarkGrowthLampBlock.INSTANCE);
 	}
 }

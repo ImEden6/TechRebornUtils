@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +22,7 @@ public class GoldenVineHandler implements GreenhousePlantHandler {
     @Override
     @Nullable
     public HarvestOffer getHarvestOffer(ServerLevel world, BlockPos pos, BlockState state) {
-        BooleanProperty bottomProp = null;
-        for (Property<?> prop : state.getProperties()) {
-            if (prop.getName().equals("bottom") && prop instanceof BooleanProperty bp) {
-                bottomProp = bp;
-                break;
-            }
-        }
+        BooleanProperty bottomProp = (BooleanProperty) state.getBlock().getStateDefinition().getProperty("bottom");
         if (bottomProp == null) {
             return null;
         }
@@ -40,7 +33,7 @@ public class GoldenVineHandler implements GreenhousePlantHandler {
         }
         // To preserve the root, make sure the block above is also a golden vine
         BlockState aboveState = world.getBlockState(pos.above());
-        if (aboveState.getBlock() != state.getBlock()) {
+        if (!aboveState.is(state.getBlock())) {
             return null; // Don't harvest the root block
         }
         var drops = java.util.Collections.singletonList(new ItemStack(state.getBlock().asItem()));

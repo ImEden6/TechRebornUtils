@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
 
 public class MagmaFlowerHandler implements GreenhousePlantHandler {
@@ -22,13 +21,7 @@ public class MagmaFlowerHandler implements GreenhousePlantHandler {
     @Override
     @Nullable
     public HarvestOffer getHarvestOffer(ServerLevel world, BlockPos pos, BlockState state) {
-        IntegerProperty ageProp = null;
-        for (Property<?> prop : state.getProperties()) {
-            if (prop.getName().equals("age") && prop instanceof IntegerProperty ip) {
-                ageProp = ip;
-                break;
-            }
-        }
+        IntegerProperty ageProp = (IntegerProperty) state.getBlock().getStateDefinition().getProperty("age");
         if (ageProp == null) {
             return null;
         }
