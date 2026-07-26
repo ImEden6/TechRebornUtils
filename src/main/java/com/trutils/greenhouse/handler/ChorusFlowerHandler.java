@@ -14,7 +14,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ChorusFlowerHandler implements GreenhousePlantHandler {
     private static final int CHORUS_MAX_AGE = 5;
@@ -43,7 +45,7 @@ public class ChorusFlowerHandler implements GreenhousePlantHandler {
 
         // Find all flowers on this tree
         List<BlockPos> flowers = new ArrayList<>();
-        List<BlockPos> visited = new ArrayList<>();
+        Set<BlockPos> visited = new HashSet<>();
         findFlowers(world, basePos, flowers, visited);
 
         // Only harvest if ALL flowers on the tree are mature
@@ -64,13 +66,11 @@ public class ChorusFlowerHandler implements GreenhousePlantHandler {
         List<ItemStack> drops = new ArrayList<>();
         harvestChorusNode(world, basePos, drops);
 
-        // Return all collected drops and set the harvested flower block to AIR
-        return new HarvestOffer(drops, Blocks.AIR.defaultBlockState());
+        return new HarvestOffer(drops, null);
     }
 
-    private void findFlowers(ServerLevel world, BlockPos pos, List<BlockPos> flowers, List<BlockPos> visited) {
-        if (visited.contains(pos)) return;
-        visited.add(pos);
+    private void findFlowers(ServerLevel world, BlockPos pos, List<BlockPos> flowers, Set<BlockPos> visited) {
+        if (!visited.add(pos)) return;
 
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof ChorusFlowerBlock) {
@@ -90,7 +90,7 @@ public class ChorusFlowerHandler implements GreenhousePlantHandler {
         BlockState state = world.getBlockState(pos);
         if (state.getBlock() instanceof ChorusPlantBlock || state.getBlock() instanceof ChorusFlowerBlock) {
             drops.addAll(Block.getDrops(state, world, pos, null));
-            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
+            world.setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
             for (Direction dir : Direction.values()) {
                 harvestChorusNode(world, pos.relative(dir), drops);
             }

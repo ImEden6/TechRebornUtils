@@ -70,6 +70,12 @@ public abstract class GreenhouseControllerMixin {
 		return LampBlock.isActive(s) || DarkGrowthLampBlock.isActive(s);
 	}
 
+	/**
+	 * @author Mervyn
+	 * @reason Fully replaces the multiblock pattern to support adjustable ceiling
+	 * height via the Greenhouse Ceiling Upgrade, which the vanilla TechReborn
+	 * pattern does not account for.
+	 */
 	@Overwrite(remap = false)
 	public void writeMultiblock(MultiblockWriter writer) {
 		BlockState lamp = TRContent.Machine.LAMP_INCANDESCENT.block.defaultBlockState()
@@ -114,38 +120,41 @@ public abstract class GreenhouseControllerMixin {
 		var self = (PowerAcceptorBlockEntity) (Object) this;
 
 		for (int y = maxScanY - 1; y >= 0; y--) {
-			BlockPos blockPos = corner.offset(offsetX, y, offsetZ);
-			BlockState blockState = level.getBlockState(blockPos);
+			BlockPos pos = corner.offset(offsetX, y, offsetZ);
+			tryHarvestBlock(level, pos, growthBoost, self);
+		}
+	}
 
-			for (var handler : GreenhousePlantRegistry.getHandlers()) {
-				if (!handler.canHandle(blockState)) {
-					continue;
-				}
-				if (growthBoost) {
-					if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerBonemeal) {
-						self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerBonemeal);
-						blockState.randomTick((ServerLevel) level, blockPos, level.random);
-						// Re-read block state in case randomTick changed it (e.g. grew the crop)
-						blockState = level.getBlockState(blockPos);
-						if (!handler.canHandle(blockState)) {
-							break;
-						}
-					}
-				}
-				HarvestOffer offer = handler.getHarvestOffer((ServerLevel) level, blockPos, blockState);
-				if (offer != null && !offer.drops().isEmpty()) {
-					if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerHarvest
-							&& insertIntoInv(offer.drops())) {
-						self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerHarvest);
-						if (offer.newState() != null) {
-							level.setBlock(blockPos, offer.newState(), 2);
-						} else {
-							level.destroyBlock(blockPos, false, null, 3);
-						}
-					}
-				}
-				break;
+	@Unique
+	private void tryHarvestBlock(Level level, BlockPos pos, boolean growthBoost, PowerAcceptorBlockEntity self) {
+		BlockState state = level.getBlockState(pos);
+		for (var handler : GreenhousePlantRegistry.getHandlers()) {
+			if (!handler.canHandle(state)) {
+				continue;
 			}
+			if (growthBoost) {
+				if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerBonemeal) {
+					self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerBonemeal);
+					state.randomTick((ServerLevel) level, pos, level.random);
+					state = level.getBlockState(pos);
+					if (!handler.canHandle(state)) {
+						break;
+					}
+				}
+			}
+			HarvestOffer offer = handler.getHarvestOffer((ServerLevel) level, pos, state);
+			if (offer != null && !offer.drops().isEmpty()) {
+				if (self.getStored() >= TechRebornConfig.greenhouseControllerEnergyPerHarvest
+						&& insertIntoInv(offer.drops())) {
+					self.useEnergy(TechRebornConfig.greenhouseControllerEnergyPerHarvest);
+					if (offer.newState() != null) {
+						level.setBlock(pos, offer.newState(), 2);
+					} else {
+						level.destroyBlock(pos, false, null, 3);
+					}
+				}
+			}
+			break;
 		}
 	}
 }
