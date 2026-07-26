@@ -19,7 +19,6 @@ public class DarkGrowthLampBlockEntity extends PowerAcceptorBlockEntity implemen
 	}
 
 	@Override
-	@SuppressWarnings("unused")
 	public void tick(Level level, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity) {
 		super.tick(level, pos, state, blockEntity);
 		if (level == null || level.isClientSide) {
@@ -52,7 +51,8 @@ public class DarkGrowthLampBlockEntity extends PowerAcceptorBlockEntity implemen
 	}
 
 	private @Nullable DarkGrowthLampBlock getLampBlock() {
-		if (getLevel() == null) return null;
+		if (getLevel() == null)
+			return null;
 		Block b = getLevel().getBlockState(getBlockPos()).getBlock();
 		return b instanceof DarkGrowthLampBlock lamp ? lamp : null;
 	}
