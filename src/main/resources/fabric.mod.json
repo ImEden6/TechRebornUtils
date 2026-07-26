@@ -23,7 +23,6 @@
 		]
 	},
 	"mixins": [
-		"trutils.mixins.json",
 		"trutils.greenhouse.mixins.json"
 	],
 	"depends": {
