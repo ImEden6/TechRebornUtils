@@ -27,6 +27,9 @@ public class ChorusFlowerHandler implements GreenhousePlantHandler {
     @Override
     @Nullable
     public HarvestOffer getHarvestOffer(ServerLevel world, BlockPos pos, BlockState state) {
+        if (!(state.getBlock() instanceof ChorusFlowerBlock)) {
+            return null;
+        }
         if (state.getValue(ChorusFlowerBlock.AGE) < CHORUS_MAX_AGE) {
             return null;
         }

@@ -127,6 +127,9 @@ public abstract class GreenhouseControllerMixin {
 						blockState.randomTick((ServerLevel) level, blockPos, level.random);
 						// Re-read block state in case randomTick changed it (e.g. grew the crop)
 						blockState = level.getBlockState(blockPos);
+						if (!handler.canHandle(blockState)) {
+							break;
+						}
 					}
 				}
 				HarvestOffer offer = handler.getHarvestOffer((ServerLevel) level, blockPos, blockState);
