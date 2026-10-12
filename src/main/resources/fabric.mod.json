@@ -23,7 +23,7 @@
 		]
 	},
 	"mixins": [
-		"trutils.greenhouse.mixins.json"
+		"trutils.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",

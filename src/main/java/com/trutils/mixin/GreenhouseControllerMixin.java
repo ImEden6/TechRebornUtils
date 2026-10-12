@@ -1,4 +1,4 @@
-package com.trutils.greenhouse.mixin;
+package com.trutils.mixin;
 
 import com.trutils.block.DarkGrowthLampBlock;
 import com.trutils.greenhouse.api.GreenhousePlantRegistry;

@@ -39,7 +39,6 @@ public class DarkGrowthLampBlock extends Block implements EntityBlock {
 
 	public DarkGrowthLampBlock() {
 		super(Properties.of()
-				.requiresCorrectToolForDrops()
 				.strength(2.0F, 2.0F)
 				.lightLevel(state -> DarkGrowthLampBlock.isActive(state) ? 3 : 0)
 				.sound(SoundType.GLASS));
